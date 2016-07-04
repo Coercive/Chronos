@@ -1,0 +1,21 @@
+{
+    "name": "Coercive/Chronos",
+    "type": "library",
+    "description": "Coercive Chronos Log Utility",
+    "homepage": "http://coercive.fr",
+    "license": "GNU",
+    "authors": [
+        {
+            "name": "Anthony Moral",
+            "email": "contact@coercive.fr",
+            "homepage": "http://coercive.fr"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-4": { "Coercive\\Utility\\Chronos\\": "" }
+    },
+    "minimum-stability": "dev"
+}
