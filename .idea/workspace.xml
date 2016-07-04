@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8e094e39-c204-451b-aa24-0c763daca9f8" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="" />
-    </list>
+    <list default="true" id="8e094e39-c204-451b-aa24-0c763daca9f8" name="Default" comment="" />
     <ignored path="Chronos.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -191,7 +189,7 @@
       <option name="presentableId" value="Default" />
       <updated>1467664620301</updated>
       <workItem from="1467664621892" duration="188000" />
-      <workItem from="1467664830620" duration="1928000" />
+      <workItem from="1467664830620" duration="1960000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'master' of https://github.com/Coercive/Chronos&#10;&#10;Conflicts:&#10;&#9;README.md&#10;">
       <created>1467667812025</created>
@@ -218,7 +216,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2116000" />
+    <option name="totallyTimeSpent" value="2148000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1920" height="1174" extended-state="6" />
