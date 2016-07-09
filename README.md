@@ -1,7 +1,7 @@
 Coercive Chronos Log Utility
 ============================
 
-The Chronos utility.
+The Chronos Log Utility allows you to accurately measure the execution time of a script, and that from the server startup.
 
 Get
 ---
