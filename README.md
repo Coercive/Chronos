@@ -30,5 +30,9 @@ Chronos::interval();
  */
  
  Chronos::interval();
+ 
+ # NEW : Step Message
+ Chronos::interval('1 - Verify something ...');
+ Chronos::interval('2 - Verify other thing ...');
 
 ```

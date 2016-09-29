@@ -34,9 +34,10 @@ class Chronos {
 	/**
 	 * Temps d'execution d'un script
 	 *
+	 * @param string $sStepMessage [optional]
 	 * @return array
 	 */
-	static public function interval() {
+	static public function interval($sStepMessage = '') {
 
 		/** @var int $iServerTime :: Temps d'execution script serveur */
 		$iServerTime = microtime(true) - (isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : 0);
@@ -49,6 +50,9 @@ class Chronos {
 			error_log(print_r('-----------------------------------------', true));
 			error_log(print_r('--------- Execution Script Time ---------', true));
 			error_log(print_r('Project : ' . self::projectName(), true));
+		}
+		if($sStepMessage) {
+			error_log(print_r('Step : ' . $sStepMessage, true));
 		}
 		error_log(print_r("Script Time : $iServerTime secondes.", true));
 		if($iDiff) {
@@ -67,9 +71,10 @@ class Chronos {
 	 * SINGLE SHOT
 	 * Temps d'execution d'un script
 	 *
+	 * @param string $sStepMessage [optional]
 	 * @return array
 	 */
-	static public function single() {
+	static public function single($sStepMessage = '') {
 
 		/** @var int $iServerTime :: Temps d'execution script serveur */
 		$iServerTime = microtime(true) - (isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : 0);
@@ -78,6 +83,9 @@ class Chronos {
 		error_log(print_r('-----------------------------------------', true));
 		error_log(print_r('------ Calcul du temps d\'execution ------', true));
 		error_log(print_r('Project : ' . self::projectName(), true));
+		if($sStepMessage) {
+			error_log(print_r('Step : ' . $sStepMessage, true));
+		}
 		error_log(print_r("Script Time : $iServerTime secondes.", true));
 		error_log(print_r('-----------------------------------------', true));
 
