@@ -3,94 +3,135 @@ namespace Coercive\Utility\Chronos;
 
 /**
  * Chronos
- * PHP Version 	5
  *
- * @version		1
  * @package 	Coercive\Utility\Chronos
- * @link		@link https://github.com/Coercive/Chronos
+ * @link		https://github.com/Coercive/Chronos
  *
  * @author  	Anthony Moral <contact@coercive.fr>
- * @copyright   2016 - 2017 Anthony Moral
- * @license 	http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
+ * @copyright   2018 Anthony Moral
+ * @license 	MIT
  */
-class Chronos {
-
-	/** @var int MicroTime Start Value */
-	static private $_iMicroTimeStart = 0;
-
-	/** @var string ProjectName */
-	static private $_sProjectName = 'Coercive_Chronos';
+class Chronos
+{
+	# Full monitoring datas
+	static private $datas = [];
 
 	/**
-	 * GET/SET PROJECTNAME FOR LOGS
+	 * The current Apache env request time
 	 *
-	 * @param string $sProjectName
-	 * @return string
+	 * @return float
 	 */
-	static public function projectName($sProjectName = '') {
-		return $sProjectName ? self::$_sProjectName = $sProjectName : self::$_sProjectName;
+	static public function getServerRequestTime(): float
+	{
+		return floatval($_SERVER['REQUEST_TIME_FLOAT'] ?? 0);
 	}
 
 	/**
-	 * Temps d'execution d'un script
+	 * The current request time
 	 *
-	 * @param string $sStepMessage [optional]
+	 * @return float
+	 */
+	static public function getCurrentRequestTime(): float
+	{
+		return microtime(true) - self::getServerRequestTime();
+	}
+
+	/**
+	 * Monitor start
+	 *
+	 * @param string $name
 	 * @return array
 	 */
-	static public function interval($sStepMessage = '') {
-
-		/** @var int $iServerTime :: Temps d'execution script serveur */
-		$iServerTime = microtime(true) - (isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : 0);
-
-		/** @var int $iDiff :: Temps d'ecart entre start et end en secondes */
-		$iDiff = self::$_iMicroTimeStart ? $iServerTime - self::$_iMicroTimeStart : NULL;
-
-		# LOG : Affichage des temps d'executions
-		if(!$iDiff) {
-			error_log(print_r('-----------------------------------------', true));
-			error_log(print_r('--------- Execution Script Time ---------', true));
-			error_log(print_r('Project : ' . self::projectName(), true));
-		}
-		if($sStepMessage) {
-			error_log(print_r('Step : ' . $sStepMessage, true));
-		}
-		error_log(print_r("Script Time : $iServerTime secondes.", true));
-		if($iDiff) {
-			error_log(print_r("Diff   Time : $iDiff secondes.", true));
-			error_log(print_r('-----------------------------------------', true));
-		}
-
-		# SET FUTUR MICRO TIME
-		self::$_iMicroTimeStart = self::$_iMicroTimeStart ? 0 : $iServerTime;
-
-		# RETURN ARRAY
-		return ['SERVER_TIME'=>$iServerTime, 'DIFF'=>$iDiff];
+	static public function start(string $name): array
+	{
+		return self::$datas[$name] = [
+			'name' => $name,
+			'time_start' => self::getCurrentRequestTime(),
+			'memory_start' => memory_get_usage(true),
+			'laps' => []
+		];
 	}
 
 	/**
-	 * SINGLE SHOT
-	 * Temps d'execution d'un script
+	 * Monitor stop
 	 *
-	 * @param string $sStepMessage [optional]
+	 * @param string $name
 	 * @return array
 	 */
-	static public function single($sStepMessage = '') {
-
-		/** @var int $iServerTime :: Temps d'execution script serveur */
-		$iServerTime = microtime(true) - (isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : 0);
-
-		# LOG : Affichage des temps d'executions
-		error_log(print_r('-----------------------------------------', true));
-		error_log(print_r('------ Calcul du temps d\'execution ------', true));
-		error_log(print_r('Project : ' . self::projectName(), true));
-		if($sStepMessage) {
-			error_log(print_r('Step : ' . $sStepMessage, true));
-		}
-		error_log(print_r("Script Time : $iServerTime secondes.", true));
-		error_log(print_r('-----------------------------------------', true));
-
-		# RETURN ARRAY
-		return ['SERVER_TIME'=>$iServerTime, 'DIFF'=>0];
+	static public function stop(string $name): array
+	{
+		self::$datas[$name]['time_stop'] = self::getCurrentRequestTime();
+		self::$datas[$name]['memory_stop'] = memory_get_usage(true);
+		return self::$datas[$name];
 	}
 
+	/**
+	 * Monitor add lap
+	 *
+	 * @param string $name
+	 * @param string $message [optional]
+	 * @return array
+	 */
+	static public function lap(string $name, string $message = ''): array
+	{
+		self::$datas[$name]['laps'][] = [
+			'time' => self::getCurrentRequestTime(),
+			'memory' => memory_get_usage(true),
+			'message' => $message
+		];
+		return self::$datas[$name];
+	}
+
+	/**
+	 * Diff one item or all process
+	 *
+	 * @param string $name
+	 * @return array
+	 */
+	static public function diff(string $name = ''): array
+	{
+		# No elements
+		if(!count(self::$datas)) {
+			return [
+				'time' => 0,
+				'memory' => 0
+			];
+		}
+
+		# Diff all the process
+		if(!$name) {
+			foreach (self::$datas as $first) { break; }
+			foreach (self::$datas as $last) {}
+
+			$start_time = $first['time_start'] ?? 0;
+			$start_memory = $first['memory_start'] ?? 0;
+			$stop_time = $last['time_stop'] ?? 0;
+			$stop_memory = $last['memory_stop'] ?? 0;
+		}
+		else {
+			$start_time = self::$datas[$name]['time_start'] ?? 0;
+			$start_memory = self::$datas[$name]['memory_start'] ?? 0;
+			$stop_time = self::$datas[$name]['time_stop'] ?? 0;
+			$stop_memory = self::$datas[$name]['memory_stop'] ?? 0;
+		}
+
+		$time = $stop_time - $start_time;
+		$memory = $stop_memory - $start_memory;
+
+		return [
+			'time' => $time > 0 ? $time : 0,
+			'memory' => $memory > 0 ? $memory : 0
+		];
+	}
+
+	/**
+	 * Get one or all items
+	 *
+	 * @param string $name
+	 * @return array
+	 */
+	static public function get(string $name = ''): array
+	{
+		return $name ? (self::$datas[$name] ?? []) : self::$datas;
+	}
 }
