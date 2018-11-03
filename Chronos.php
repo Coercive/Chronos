@@ -37,6 +37,16 @@ class Chronos
 	}
 
 	/**
+	 * The current memory usage
+	 *
+	 * @return int
+	 */
+	static public function getMemoryUsage(): int
+	{
+		return memory_get_usage(true);
+	}
+
+	/**
 	 * Monitor start
 	 *
 	 * @param string $name
@@ -47,7 +57,7 @@ class Chronos
 		return self::$datas[$name] = [
 			'name' => $name,
 			'time_start' => self::getCurrentRequestTime(),
-			'memory_start' => memory_get_usage(true),
+			'memory_start' => self::getMemoryUsage(),
 			'laps' => []
 		];
 	}
@@ -61,7 +71,7 @@ class Chronos
 	static public function stop(string $name): array
 	{
 		self::$datas[$name]['time_stop'] = self::getCurrentRequestTime();
-		self::$datas[$name]['memory_stop'] = memory_get_usage(true);
+		self::$datas[$name]['memory_stop'] = self::getMemoryUsage();
 		return self::$datas[$name];
 	}
 
@@ -76,7 +86,7 @@ class Chronos
 	{
 		self::$datas[$name]['laps'][] = [
 			'time' => self::getCurrentRequestTime(),
-			'memory' => memory_get_usage(true),
+			'memory' => self::getMemoryUsage(),
 			'message' => $message
 		];
 		return self::$datas[$name];
